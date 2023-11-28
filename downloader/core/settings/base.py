@@ -15,7 +15,7 @@ SECRET_KEY = "django-insecure-x=f!#lo*$!zh-9f5u+1zlc1^kgecv*l82n)n=a2z1!23r^8!5(
 
 environment = os.environ.get("ENVIRONMENT", default="development")
 
-DEBUG = True
+DEBUG = True if environment == "development" else False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third party
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
