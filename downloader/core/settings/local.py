@@ -35,13 +35,11 @@ MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "backend_cache://0.0.0.0:6405/",
+        "LOCATION": "redis://0.0.0.0:6405/",
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
 
 INTERNAL_IPS = [
-    # ...
     "127.0.0.1",
-    # ...
 ]
