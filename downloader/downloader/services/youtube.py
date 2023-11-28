@@ -15,6 +15,7 @@ def fetch_download_details(url, **kwargs) -> Dict[str, Union[List[str], Any]]:
                 "abr": s.abr,
                 "file_size": s.filesize,
                 "url": s.url,
+                "resolution": s.resolution,
             }
             for s in stream
         ],
