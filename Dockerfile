@@ -15,6 +15,9 @@ COPY ./requirements.txt /app/
 RUN pip3 install -r requirements.txt
 
 COPY . /app
+RUN chmod a+x entrypoints/build.sh
 RUN chmod +x entrypoints/runserver.sh
+
+RUN bash entrypoints/build.sh
 
 ENTRYPOINT [ "bash", "entrypoints/runserver.sh" ]
