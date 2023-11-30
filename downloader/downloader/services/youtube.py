@@ -25,6 +25,17 @@ class PyTubeYoutube(YouTube):
         self._vid_info = innertube_response
 
 
+def convert_size(size_in_bytes):
+    units = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
+    unit_index = 0
+    size = float(size_in_bytes)
+    while size >= 1024 and unit_index < len(units) - 1:
+        size /= 1024
+        unit_index += 1
+
+    return f"{size:.2f} {units[unit_index]}"
+
+
 def fetch_download_details(url, **kwargs) -> Dict[str, Union[List[str], Any]]:
     yt = PyTubeYoutube(url, use_oauth=False, allow_oauth_cache=True)
     stream = yt.streams.filter(**kwargs)
@@ -36,7 +47,7 @@ def fetch_download_details(url, **kwargs) -> Dict[str, Union[List[str], Any]]:
                 "itag": s.itag,
                 "mime_type": s.mime_type,
                 "abr": s.abr,
-                "file_size": s.filesize,
+                "file_size": convert_size(s.filesize),
                 "url": s.url,
                 "resolution": s.resolution,
             }
