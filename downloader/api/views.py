@@ -20,6 +20,7 @@ class DownloadView(APIView):
 
     class OutputSerializer(serializers.Serializer):
         title = serializers.CharField(required=True)
+        thumbnail_url = serializers.URLField(required=True)
         streams = serializers.ListField(required=True)
 
     def get(self, request):

@@ -30,6 +30,7 @@ def fetch_download_details(url, **kwargs) -> Dict[str, Union[List[str], Any]]:
     stream = yt.streams.filter(**kwargs)
     data = {
         "title": yt.title,
+        "thumbnail_url": yt.thumbnail_url,
         "streams": [
             {
                 "itag": s.itag,
