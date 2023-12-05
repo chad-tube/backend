@@ -19,13 +19,27 @@ from downloader.services.youtube import fetch_download_details
 """
 
 
+class TYPE_CHOICES:
+    ALL = "all"
+    VIDEO = "video"
+    AUDIO = "audio"
+
+
+class ListTypeChoices(APIView):
+    def get(self, request):
+        return Response(
+            {
+                "choices": [
+                    {"value": TYPE_CHOICES.ALL, "label": "All"},
+                    {"value": TYPE_CHOICES.VIDEO, "label": "Video"},
+                    {"value": TYPE_CHOICES.AUDIO, "label": "Audio"},
+                ]
+            }
+        )
+
+
 class DownloadView(APIView):
     class InputSerializer(serializers.Serializer):
-        class TYPE_CHOICES:
-            VIDEO = "video"
-            AUDIO = "audio"
-            ALL = "all"
-
         TYPE_CHOICES_ = (
             (TYPE_CHOICES.VIDEO, "Video"),
             (TYPE_CHOICES.AUDIO, "Audio"),
@@ -51,7 +65,9 @@ class DownloadView(APIView):
             data = cache.get(serializer.validated_data["url"])
             return Response(data)
         else:
-            data = fetch_download_details(serializer.validated_data["url"], serializer.validated_data["type_"])
+            data = fetch_download_details(
+                serializer.validated_data["url"], serializer.validated_data["type_"]
+            )
             cache.set(serializer.validated_data["url"], data, timeout=60 * 60 * 24)
 
         output_serializer = self.OutputSerializer(data=data)
