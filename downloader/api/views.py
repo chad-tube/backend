@@ -1,10 +1,13 @@
+import pickle
+
 from django.core.cache import cache
+from django.db import transaction
 
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from downloader.services.youtube import fetch_download_details
+from downloader.services.youtube import fetch_download_object, filter_download_object
 
 
 """
@@ -57,19 +60,32 @@ class DownloadView(APIView):
     def get(self, request):
         return Response({"message": "Hello, world!"})
 
+    @transaction.atomic
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = {}
+        pytube_object = None
+
         if cache.get(serializer.validated_data["url"]):
-            data = cache.get(serializer.validated_data["url"])
-            return Response(data)
+            obj_from_cache = cache.get(serializer.validated_data["url"])
+            pytube_object = pickle.loads(obj_from_cache)
+            filtered_pytube_object = filter_download_object(
+                pytube_object, serializer.validated_data["type_"]
+            )
+            return Response(filtered_pytube_object)
         else:
-            data = fetch_download_details(
+            pytube_object = fetch_download_object(
                 serializer.validated_data["url"], serializer.validated_data["type_"]
             )
-            cache.set(serializer.validated_data["url"], data, timeout=60 * 60 * 24)
+            pickled_object = pickle.dumps(pytube_object)
+            cache.set(
+                serializer.validated_data["url"], pickled_object, timeout=60 * 60 * 24
+            )
 
-        output_serializer = self.OutputSerializer(data=data)
+        filtered_pytube_object = filter_download_object(
+            pytube_object, serializer.validated_data["type_"]
+        )
+
+        output_serializer = self.OutputSerializer(data=filtered_pytube_object)
         output_serializer.is_valid(raise_exception=True)
         return Response(output_serializer.data)

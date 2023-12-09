@@ -36,19 +36,22 @@ def convert_size(size_in_bytes):
     return f"{size:.2f} {units[unit_index]}"
 
 
-def fetch_download_details(
-    url, type_=None, **kwargs
+def fetch_download_object(url) -> Dict[str, Union[List[str], Any]]:
+    return PyTubeYoutube(url, use_oauth=False, allow_oauth_cache=True)
+
+
+def filter_download_object(
+    object: PyTubeYoutube, type_: str = None
 ) -> Dict[str, Union[List[str], Any]]:
-    yt = PyTubeYoutube(url, use_oauth=False, allow_oauth_cache=True)
     if type_ == "video":
-        stream = yt.streams.filter(progressive=True)
+        stream = object.streams.filter(progressive=True)
     elif type_ == "audio":
-        stream = yt.streams.filter(only_audio=True)
+        stream = object.streams.filter(only_audio=True)
     else:
-        stream = yt.streams.filter()
+        stream = object.streams.filter()
     data = {
-        "title": yt.title,
-        "thumbnail_url": yt.thumbnail_url,
+        "title": object.title,
+        "thumbnail_url": object.thumbnail_url,
         "streams": [
             {
                 "itag": s.itag,
