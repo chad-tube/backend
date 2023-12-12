@@ -60,19 +60,15 @@ class DownloadView(APIView):
     def get(self, request):
         return Response({"message": "Hello, world!"})
 
+
     @transaction.atomic
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         pytube_object = None
-        print("Type: ", serializer.validated_data["type_"])
         if cache.get(serializer.validated_data["url"]):
             obj_from_cache = cache.get(serializer.validated_data["url"])
             pytube_object = pickle.loads(obj_from_cache)
-            filtered_pytube_object = filter_download_object(
-                pytube_object, serializer.validated_data["type_"]
-            )
-            return Response(filtered_pytube_object)
         else:
             pytube_object = fetch_download_object(serializer.validated_data["url"])
             pickled_object = pickle.dumps(pytube_object)
