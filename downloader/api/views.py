@@ -65,7 +65,6 @@ class DownloadView(APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         pytube_object = None
-        print("Type: ", serializer.validated_data["type_"])
         if cache.get(serializer.validated_data["url"]):
             obj_from_cache = cache.get(serializer.validated_data["url"])
             pytube_object = pickle.loads(obj_from_cache)
